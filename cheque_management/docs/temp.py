@@ -7,4 +7,4 @@ for basepath, folders, files in os.walk("."):
 				content = c.read()
 
 			for path in re.findall("""{{.?docs_base_url.?}}([^'"\)]*)""", content):
-				print path
+				print (path)
