@@ -4,6 +4,7 @@
 frappe.ui.form.on('Payable Cheques', {
 	onload: function(frm) {
 		// formatter for Payable Cheques Status
+		//frm.page.actions_btn_group.show();
 		frm.set_indicator_formatter('status',
 			function(doc) { 
 				if(doc.status=="Cheque Issued") {	return "lightblue"}
@@ -12,6 +13,7 @@ frappe.ui.form.on('Payable Cheques', {
 		})
 	},
 	refresh: function(frm) {
+		//frm.page.actions_btn_group.show();
 		if(frm.doc.cheque_status=="Cheque Issued") {
 			frm.set_df_property("bank", 'read_only', 0);
 		} else { frm.set_df_property("bank", 'read_only', 1); }
@@ -24,7 +26,7 @@ frappe.ui.form.on('Payable Cheques', {
 			if (chq_sts!=frm.doc.cheque_status) {  
 				frm.page.actions_btn_group.hide();
 				if (frm.doc.cheque_status=="Cheque Cancelled") {
-					$c('runserverobj', args={'method':'on_update','docs':frm.doc},function(r,rt) {
+					frm.call('on_update').then(result => {
 							frm.page.actions_btn_group.show();
 							frm.refresh_fields();
 					}); 
@@ -36,7 +38,7 @@ frappe.ui.form.on('Payable Cheques', {
 						function(values){
 							if (values) {
 								frm.doc.posting_date = values.posting_date;
-								$c('runserverobj', args={'method':'on_update','docs':frm.doc},function(r,rt) {
+								frm.call('on_update').then(result => {
 										frm.page.actions_btn_group.show();
 										frm.refresh_fields();
 								}); 

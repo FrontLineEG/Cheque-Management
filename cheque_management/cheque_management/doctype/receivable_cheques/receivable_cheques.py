@@ -9,8 +9,14 @@ from frappe import msgprint, _
 from frappe.model.document import Document
 from erpnext.accounts.utils import get_account_currency
 from erpnext.setup.utils import get_exchange_rate
-
+@frappe.whitelist()
+def say_hello():
+	frappe.msgprint("Hello There")
 class ReceivableCheques(Document):
+	#def __init__(): #self is the current instance
+        #	pass
+	def say_hi(self):
+		frappe.msgprint('Hi there!')
 	def autoname(self):
 		name2 = frappe.db.sql("""select left(replace(replace(replace(sysdate(6), ' ',''),'-',''),':',''),14)""")[0][0]
 
@@ -20,7 +26,7 @@ class ReceivableCheques(Document):
 			ndx = "-"
 
 		self.name = self.cheque_no + ndx
-		
+
 	def validate(self):
 		self.cheque_status = self.get_status()
 
@@ -81,7 +87,7 @@ class ReceivableCheques(Document):
 	def cancel_payment_entry(self):
 		if self.payment_entry: 
 			frappe.get_doc("Payment Entry", self.payment_entry).cancel()
-				
+
 		self.append("status_history", {
 								"status": self.cheque_status,
 								"transaction_date": nowdate(),
@@ -92,10 +98,10 @@ class ReceivableCheques(Document):
 		message = """<a href="#Form/Payment Entry/%s" target="_blank">%s</a>""" % (self.payment_entry, self.payment_entry)
 		#msgprint(_("Payment Entry {0} Cancelled").format(comma_and(message)))
 		message = _("Payment Entry {0} Cancelled").format(comma_and(message))
-		
+
 		return message
 
-			
+
 	def make_journal_entry(self, account1, account2, amount, posting_date=None, party_type=None, party=None, cost_center=None, 
 							save=True, submit=False):
 		jv = frappe.new_doc("Journal Entry")
@@ -144,6 +150,6 @@ class ReceivableCheques(Document):
 		message = """<a href="#Form/Journal Entry/%s" target="_blank">%s</a>""" % (jv.name, jv.name)
 		msgprint(_("Journal Entry {0} created").format(comma_and(message)))
 		#message = _("Journal Entry {0} created").format(comma_and(message))
-		
+
 		return message
-			
+

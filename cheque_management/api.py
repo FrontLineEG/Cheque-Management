@@ -53,7 +53,8 @@ def pe_on_submit(self, method):
 		rc.amount = self.base_received_amount
 		rc.exchange_rate = 1
 		rc.remarks = self.remarks
-		#rc.cheque_status = 1
+		rc.docstatus=1
+		rc.cheque_status = 'Cheque Received'
 		rc.set("status_history", [
 			{
 				"status": "Cheque Received",
@@ -88,7 +89,8 @@ def pe_on_submit(self, method):
 		pc.amount = self.base_paid_amount
 		pc.exchange_rate = 1
 		pc.remarks = self.remarks
-		#pc.cheque_status = 1
+		#pc.cheque_status = 'Cheque Received'
+		pc.docstatus=1
 		pc.set("status_history", [
 			{
 				"status": "Cheque Issued",
