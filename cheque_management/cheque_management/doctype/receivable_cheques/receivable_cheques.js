@@ -5,15 +5,15 @@ frappe.ui.form.on('Receivable Cheques', {
 	onload: function(frm) {
 		// formatter for Receivable Cheques Status
 		//frm.page.actions_btn_group.show();
-		frm.set_indicator_formatter('status',
-			function(doc) { 
-				if(doc.status=="Cheque Received") {	return "lightblue"}
-				if(doc.status=="Cheque Deposited") {	return "blue"}
-				if(doc.status=="Cheque Collected") {	return "green"}
-				if(doc.status=="Cheque Returned") {	return "orange"}
-				if(doc.status=="Cheque Rejected") {	return "red"}
-				if(doc.status=="Cheque Cancelled") {	return "black"}
-		})
+		// frm.set_indicator_formatter('status',
+		// 	function(doc) { 
+		// 		if(doc.status=="Cheque Received") {	return "lightblue"}
+		// 		if(doc.status=="Cheque Deposited") {	return "blue"}
+		// 		if(doc.status=="Cheque Collected") {	return "green"}
+		// 		if(doc.status=="Cheque Returned") {	return "orange"}
+		// 		if(doc.status=="Cheque Rejected") {	return "red"}
+		// 		if(doc.status=="Cheque Cancelled") {	return "black"}
+		// })
 	},
 	refresh: function(frm) {
 		//frm.page.actions_btn_group.show();
