@@ -29,7 +29,7 @@ class ReceivableCheques(Document):
 
 	def validate(self):
 		self.cheque_status = self.get_status()
-
+	@frappe.whitelist()
 	def on_update(self):
 		notes_acc = frappe.db.get_value("Company", self.company, "receivable_notes_account")
 		if not notes_acc:
@@ -48,9 +48,9 @@ class ReceivableCheques(Document):
 			frappe.throw(_("Default Receivable Account not defined in the company setup page"))
 		elif len(notes_acc) < 4:
 			frappe.throw(_("Default Receivable Account not defined in the company setup page"))
-		if self.cheque_status == "Cheque Deposited":
-			self.make_journal_entry(uc_acc, notes_acc, self.amount, self.posting_date, party_type=None, party=None, cost_center=None, 
-					save=True, submit=True)
+		# if self.cheque_status == "Cheque Deposited":
+		# 	self.make_journal_entry(uc_acc, notes_acc, self.amount, self.posting_date, party_type=None, party=None, cost_center=None, 
+		# 			save=True, submit=True)
 		if self.cheque_status == "Cheque Cancelled":
 			self.cancel_payment_entry()
 		if self.cheque_status == "Cheque Collected":
