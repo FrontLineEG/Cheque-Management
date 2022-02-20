@@ -23,7 +23,7 @@ class PayableCheques(Document):
 		
 	def validate(self):
 		self.cheque_status = self.get_status()
-
+	@frappe.whitelist()
 	def on_update(self):
 		notes_acc = frappe.db.get_value("Company", self.company, "payable_notes_account")
 		if not notes_acc:
