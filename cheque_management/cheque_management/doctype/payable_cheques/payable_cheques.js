@@ -56,7 +56,7 @@ cur_frm.fields_dict.bank.get_query = function(doc) {
 	return {
 		filters: [
 			["Account", "account_type", "=", "Bank"],
-			["Account", "root_type", "=", "Asset"],
+			// ["Account", "root_type", "=", "Asset"],
 			["Account", "is_group", "=",0],
 			["Account", "company", "=", doc.company]
 		]
