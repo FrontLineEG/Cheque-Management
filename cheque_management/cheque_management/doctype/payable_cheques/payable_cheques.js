@@ -5,21 +5,22 @@ frappe.ui.form.on('Payable Cheques', {
 	onload: function(frm) {
 		// formatter for Payable Cheques Status
 		//frm.page.actions_btn_group.show();
-		frm.set_indicator_formatter('status',
-			function(doc) { 
-				if(doc.status=="Cheque Issued") {	return "lightblue"}
-				if(doc.status=="Cheque Deducted") {	return "green"}
-				if(doc.status=="Cheque Cancelled") {	return "black"}
-		})
+		// frm.set_indicator_formatter('status',
+		// 	function(doc) { 
+		// 		if(doc.status=="Cheque Issued") {	return "lightblue"}
+		// 		if(doc.status=="Cheque Deducted") {	return "green"}
+		// 		if(doc.status=="Cheque Cancelled") {	return "black"}
+		// })
 	},
 	refresh: function(frm) {
-		//frm.page.actions_btn_group.show();
+	
 		if(frm.doc.cheque_status=="Cheque Issued") {
 			frm.set_df_property("bank", 'read_only', 0);
 		} else { frm.set_df_property("bank", 'read_only', 1); }
 		frm.set_df_property("bank", 'reqd', 1);
 		var chq_sts = "";
 		$.each(frm.doc["status_history"], function(i, row) {
+			console.log(row);
 			chq_sts = row.status;
 		});
 		if(frm.doc.cheque_status) {

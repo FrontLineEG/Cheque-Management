@@ -65,7 +65,7 @@ def pe_on_submit(self, method):
 		])
 		rc.insert(ignore_permissions=True)
 		rc.submit()
-		message = """<a href="#Form/Receivable Cheques/%s" target="_blank">%s</a>""" % (rc.name, rc.name)
+		message = """<a href="../receivable-cheques/%s" target="_blank">%s</a>""" % (rc.name, rc.name)
 		msgprint(_("Receivable Cheque {0} created").format(comma_and(message)))
 
 	if self.mode_of_payment == "Cheque" and self.payment_type == "Pay":
@@ -91,17 +91,15 @@ def pe_on_submit(self, method):
 		pc.remarks = self.remarks
 		#pc.cheque_status = 'Cheque Received'
 		pc.docstatus=1
-		pc.set("status_history", [
-			{
-				"status": "Cheque Issued",
-				"transaction_date": nowdate(),
-				"credit_account": notes_acc,
-				"debit_account": rec_acc
-			}
-		])
+		new_row = pc.append("status_history",{})
+		new_row.status = "Cheque Issued"
+		new_row.transaction_date = nowdate()
+		new_row.credit_account = notes_acc
+		new_row.debit_account = rec_acc
 		pc.insert(ignore_permissions=True)
+		frappe.db.commit()
 		pc.submit()
-		message = """<a href="#Form/Payable Cheques/%s" target="_blank">%s</a>""" % (pc.name, pc.name)
+		message = """<a href="../payable-cheques/%s" target="_blank">%s</a>""" % (pc.name, pc.name)
 		msgprint(_("Payable Cheque {0} created").format(comma_and(message)))
 
 def pe_on_cancel(self, method):

@@ -229,7 +229,7 @@
   "transitions": [
    {
     "action": "Cheque Deducted",
-    "allow_self_approval": 0,
+    "allow_self_approval": 1,
     "allowed": "All",
     "condition": null,
     "next_state": "Cheque Deducted",
