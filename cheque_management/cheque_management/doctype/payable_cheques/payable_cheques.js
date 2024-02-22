@@ -51,7 +51,18 @@ frappe.ui.form.on('Payable Cheques', {
 				}
 			}
 		}
-	}
+	},
+	before_workflow_action(frm) {
+		if (
+		  frm.doc.workflow_state == "Cheque Issued" &&
+		  frm.selected_workflow_action == "Cheque Cancelled"
+		) {
+		  if (frm.doc.docstatus === 1) {
+			  frm.set_value("cheque_status","Cheque Cancelled")
+	
+		  }
+		}
+	  },
 });
 cur_frm.fields_dict.bank.get_query = function(doc) {
 	return {

@@ -221,9 +221,7 @@
     "parent": "Payable Cheques Cycle",
     "parentfield": "states",
     "parenttype": "Workflow",
-    "state": "Cheque Cancelled",
-    "update_field": "cheque_status",
-    "update_value": "Cheque Cancelled"
+    "state": "Cheque Cancelled"
    }
   ],
   "transitions": [
