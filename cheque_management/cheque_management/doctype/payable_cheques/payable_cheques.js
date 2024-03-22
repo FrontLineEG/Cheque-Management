@@ -16,11 +16,15 @@ frappe.ui.form.on('Payable Cheques', {
 	
 		if(frm.doc.cheque_status=="Cheque Issued") {
 			frm.set_df_property("bank", 'read_only', 0);
-		} else { frm.set_df_property("bank", 'read_only', 1); }
+		} else {
+			if(frm.doc.bank){
+				frm.set_df_property("bank", 'read_only', 1); 
+			} 
+	}
 		frm.set_df_property("bank", 'reqd', 1);
 		var chq_sts = "";
 		$.each(frm.doc["status_history"], function(i, row) {
-			console.log(row);
+			// console.log(row);
 			chq_sts = row.status;
 		});
 		if(frm.doc.cheque_status) {
@@ -42,6 +46,7 @@ frappe.ui.form.on('Payable Cheques', {
 								frm.call('on_update').then(result => {
 										frm.page.actions_btn_group.show();
 										frm.refresh_fields();
+										console.log(result);
 								}); 
 							}
 						},
