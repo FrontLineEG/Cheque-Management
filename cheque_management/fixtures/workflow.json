@@ -246,6 +246,17 @@
     "parentfield": "transitions",
     "parenttype": "Workflow",
     "state": "Cheque Issued"
+   },
+   {
+    "action": "Cheque Cancelled",
+    "allow_self_approval": 1,
+    "allowed": "All",
+    "condition": null,
+    "next_state": "Cheque Cancelled",
+    "parent": "Payable Cheques Cycle",
+    "parentfield": "transitions",
+    "parenttype": "Workflow",
+    "state": "Cheque Deducted"
    }
   ],
   "workflow_name": "Payable Cheques Cycle",
