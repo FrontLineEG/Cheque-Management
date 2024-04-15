@@ -53,6 +53,8 @@ class ReceivableCheques(Document):
 					save=True, submit=True)
 		if self.cheque_status == "Cheque Cancelled":
 			self.cancel_payment_entry()
+			self.cancel()
+			self.cancel_je()
 		if self.cheque_status == "Cheque Collected":
 			self.make_journal_entry(self.deposit_bank, uc_acc, self.amount, self.posting_date, party_type=None, party=None, cost_center=None, 
 					save=True, submit=True)
@@ -101,7 +103,16 @@ class ReceivableCheques(Document):
 
 		return message
 
+		
+	def cancel_je(self):
+		if self.payment_entry:
+			for entry in self.status_history:
+				if entry.journal_entry:
+					frappe.get_doc('Journal Entry',entry.journal_entry).cancel()
+			
 
+				
+		
 	def make_journal_entry(self, account1, account2, amount, posting_date=None, party_type=None, party=None, cost_center=None, 
 							save=True, submit=False):
 		jv = frappe.new_doc("Journal Entry")
