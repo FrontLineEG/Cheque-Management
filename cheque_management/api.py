@@ -6,9 +6,7 @@ from __future__ import unicode_literals
 import frappe, erpnext
 from frappe.utils import flt, cstr, nowdate, comma_and
 from frappe import throw, msgprint, _
-from cheque_management.patches import validate_mode_of_payments
 def pe_before_submit(self, method):
-	validate_mode_of_payments()
 	if self.mode_of_payment == "Receivable Cheque" and self.payment_type == "Receive":
 		notes_acc = frappe.db.get_value("Company", self.company, "receivable_notes_account")
 		if not notes_acc:
