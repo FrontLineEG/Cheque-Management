@@ -1,4 +1,15 @@
 frappe.ui.form.on("Payment Entry", {
+  refresh(frm){
+    frappe.call({
+      method: 'cheque_management.patches.create_mode_of_payment.validate_mode_of_payments',
+      callback: (r) => {
+      // on success
+      },
+      error: (r) => {
+      // on error
+      }
+     })
+  },
   validate(frm) {
     if (
       frm.doc.mode_of_payment === "Payable Cheque" &&
