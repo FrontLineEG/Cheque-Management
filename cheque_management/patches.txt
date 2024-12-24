@@ -1,0 +1,4 @@
+[pre_model_sync]
+cheque_management.patches.create_mode_of_payment
+[post_model_sync]
+
