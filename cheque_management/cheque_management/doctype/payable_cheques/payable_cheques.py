@@ -42,10 +42,34 @@ class PayableCheques(Document):
 					save=True, submit=True)
 		if self.cheque_status == "Cheque Cancelled":
 			self.cancel_payment_entry()
+			self.cancel()
+			self.cancel_je()
 			
 	
 	def on_submit(self):
 		self.set_status()
+	
+	def cancel_je(self):
+		if self.payment_entry:
+			je_data = ''
+			# frappe.get_doc('Payment Entry',self.payment_entry).cancel()
+			for entry in self.status_history:
+				if entry.journal_entry:
+					je_data = entry.journal_entry
+					frappe.get_doc('Journal Entry',entry.journal_entry).cancel()
+					# frappe.db.set_value('Payable Cheques Status',entry.name,'status','Cheque Cancelled')
+
+				if entry.status == 'Cheque Cancelled':
+					frappe.db.set_value('Payable Cheques Status',entry.name,'journal_entry',je_data)
+				frappe.db.set_value('Payable Cheques',self.name,'workflow_state','Cheque Cancelled')
+				frappe.db.set_value('Payable Cheques',self.name,'cheque_status','Cheque Cancelled')
+				
+				
+
+
+
+
+
 
 	def set_status(self, cheque_status=None):
 		'''Get and update cheque_status'''
@@ -66,16 +90,17 @@ class PayableCheques(Document):
 		return cheque_status
 
 	def cancel_payment_entry(self):
+		message = ''
 		if self.payment_entry: 
 			frappe.get_doc("Payment Entry", self.payment_entry).cancel()
-				
+
 		self.append("status_history", {
 								"status": self.cheque_status,
 								"transaction_date": nowdate(),
 								"bank": self.bank
 							})
 		self.submit()
-		message = """<a href="#Form/Payment Entry/%s" target="_blank">%s</a>""" % (self.payment_entry, self.payment_entry)
+		message += """<a href="#Form/Payment Entry/%s" target="_blank">%s</a>""" % (self.payment_entry, self.payment_entry) 
 		msgprint(_("Payment Entry {0} Cancelled").format(comma_and(message)))
 
 			

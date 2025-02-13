@@ -94,7 +94,7 @@
   "transitions": [
    {
     "action": "Cheque Deposited",
-    "allow_self_approval": 0,
+    "allow_self_approval": 1,
     "allowed": "All",
     "condition": null,
     "next_state": "Cheque Deposited",
@@ -105,7 +105,7 @@
    },
    {
     "action": "Cheque Cancelled",
-    "allow_self_approval": 0,
+    "allow_self_approval": 1,
     "allowed": "All",
     "condition": null,
     "next_state": "Cheque Cancelled",
@@ -116,7 +116,7 @@
    },
    {
     "action": "Cheque Collected",
-    "allow_self_approval": 0,
+    "allow_self_approval": 1,
     "allowed": "All",
     "condition": null,
     "next_state": "Cheque Collected",
@@ -127,7 +127,7 @@
    },
    {
     "action": "Cheque Returned",
-    "allow_self_approval": 0,
+    "allow_self_approval": 1,
     "allowed": "All",
     "condition": null,
     "next_state": "Cheque Returned",
@@ -138,7 +138,7 @@
    },
    {
     "action": "Cheque Rejected",
-    "allow_self_approval": 0,
+    "allow_self_approval": 1,
     "allowed": "All",
     "condition": null,
     "next_state": "Cheque Rejected",
@@ -149,7 +149,7 @@
    },
    {
     "action": "Cheque Deposited",
-    "allow_self_approval": 0,
+    "allow_self_approval": 1,
     "allowed": "All",
     "condition": null,
     "next_state": "Cheque Deposited",
@@ -160,7 +160,7 @@
    },
    {
     "action": "Cheque Cancelled",
-    "allow_self_approval": 0,
+    "allow_self_approval": 1,
     "allowed": "All",
     "condition": null,
     "next_state": "Cheque Cancelled",
@@ -168,6 +168,28 @@
     "parentfield": "transitions",
     "parenttype": "Workflow",
     "state": "Cheque Returned"
+   },
+   {
+    "action": "Cheque Cancelled",
+    "allow_self_approval": 1,
+    "allowed": "All",
+    "condition": null,
+    "next_state": "Cheque Cancelled",
+    "parent": "Receivable Cheques Cycle",
+    "parentfield": "transitions",
+    "parenttype": "Workflow",
+    "state": "Cheque Deposited"
+   },
+   {
+    "action": "Cheque Cancelled",
+    "allow_self_approval": 1,
+    "allowed": "All",
+    "condition": null,
+    "next_state": "Cheque Cancelled",
+    "parent": "Receivable Cheques Cycle",
+    "parentfield": "transitions",
+    "parenttype": "Workflow",
+    "state": "Cheque Collected"
    }
   ],
   "workflow_name": "Receivable Cheques Cycle",
@@ -246,6 +268,17 @@
     "parentfield": "transitions",
     "parenttype": "Workflow",
     "state": "Cheque Issued"
+   },
+   {
+    "action": "Cheque Cancelled",
+    "allow_self_approval": 1,
+    "allowed": "All",
+    "condition": null,
+    "next_state": "Cheque Cancelled",
+    "parent": "Payable Cheques Cycle",
+    "parentfield": "transitions",
+    "parenttype": "Workflow",
+    "state": "Cheque Deducted"
    }
   ],
   "workflow_name": "Payable Cheques Cycle",

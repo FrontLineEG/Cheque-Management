@@ -39,25 +39,47 @@ frappe.ui.form.on('Receivable Cheques', {
 					}); 
 				}
 				else {
-					frappe.prompt([
-						{'fieldname': 'posting_date', 'fieldtype': 'Date', 'label': 'Posting Date', 'reqd': 1}
-						],
-						function(values){
-							//if (values) {
-								frm.doc.posting_date = values.posting_date;
+					// frappe.prompt([
+					// 	{'fieldname': 'posting_date', 'fieldtype': 'Date', 'label': 'Posting Date', 'reqd': 1}
+					// 	],
+					// 	function(values){
+					// 		//if (values) {
+					// 			frm.doc.posting_date = values.posting_date;
 
-							frm.call('on_update').then(result => {
-								frm.page.actions_btn_group.show();
-								frm.refresh_fields();
-								})
-								//frm.refresh_fields();
-							//}
-						},
-						__("Transaction Posting Date"),
-						__("Confirm")
-					);
+					// 		frm.call('on_update').then(result => {
+					// 			frm.page.actions_btn_group.show();
+					// 			frm.refresh_fields();
+					// 			})
+					// 			//frm.refresh_fields();
+					// 		//}
+					// 	},
+					// 	__("Transaction Posting Date"),
+					// 	__("Confirm")
+					// );
 				}
 			}
+		}
+	},
+	after_workflow_action(frm){
+		if (frm.doc.cheque_status !="Cheque Cancelled" && frm.doc.cheque_status !="Cheque Rejected") {
+			frappe.prompt([
+				{'fieldname': 'posting_date', 'fieldtype': 'Date', 'label': 'Posting Date', 'reqd': 1}
+				],
+				function(values){
+					//if (values) {
+						frm.doc.posting_date = values.posting_date;
+
+					frm.call('on_update').then(result => {
+						frm.page.actions_btn_group.show();
+						frm.refresh_fields();
+						})
+						//frm.refresh_fields();
+					//}
+				},
+				__("Transaction Posting Date"),
+				__("Confirm")
+			);
+
 		}
 	}
 });

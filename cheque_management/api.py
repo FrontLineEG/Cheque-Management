@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # Copyright (c) 2017, Direction and contributors
 # For license information, please see license.txt
 
@@ -6,9 +6,8 @@ from __future__ import unicode_literals
 import frappe, erpnext
 from frappe.utils import flt, cstr, nowdate, comma_and
 from frappe import throw, msgprint, _
-
 def pe_before_submit(self, method):
-	if self.mode_of_payment == "Cheque" and self.payment_type == "Receive":
+	if self.mode_of_payment == "Receivable Cheque" and self.payment_type == "Receive":
 		notes_acc = frappe.db.get_value("Company", self.company, "receivable_notes_account")
 		if not notes_acc:
 			frappe.throw(_("Receivable Notes Account not defined in the company setup page"))
@@ -17,7 +16,7 @@ def pe_before_submit(self, method):
 			frappe.throw(_("Default Receivable Account not defined in the company setup page"))
 		self.db_set("paid_to", notes_acc)
 		self.db_set("paid_from", rec_acc)
-	if self.mode_of_payment == "Cheque" and self.payment_type == "Pay":
+	if self.mode_of_payment == "Payable Cheque" and self.payment_type == "Pay":
 		notes_acc = frappe.db.get_value("Company", self.company, "payable_notes_account")
 		if not notes_acc:
 			frappe.throw(_("Payable Notes Account not defined in the company setup page"))
@@ -29,11 +28,11 @@ def pe_before_submit(self, method):
 
 def pe_on_submit(self, method):
 	hh_currency = erpnext.get_company_currency(self.company)
-	if self.mode_of_payment == "Cheque" and self.paid_from_account_currency != hh_currency:
+	if (self.mode_of_payment == "Receivable Cheque" or self.mode_of_payment == "Payable Cheque") and self.paid_from_account_currency != hh_currency:
 		frappe.throw(_("You cannot use foreign currencies with Mode of Payment   Cheque"))
-	if self.mode_of_payment == "Cheque" and self.paid_to_account_currency != hh_currency:
+	if (self.mode_of_payment == "Receivable Cheque" or self.mode_of_payment == "Payable Cheque")  and self.paid_to_account_currency != hh_currency:
 		frappe.throw(_("You cannot use foreign currencies with Mode of Payment   Cheque"))
-	if self.mode_of_payment == "Cheque" and self.payment_type == "Receive":
+	if self.mode_of_payment == "Receivable Cheque" and self.payment_type == "Receive":
 		notes_acc = frappe.db.get_value("Company", self.company, "receivable_notes_account")
 		if not notes_acc:
 			frappe.throw(_("Receivable Notes Account not defined in the company setup page"))
@@ -68,7 +67,7 @@ def pe_on_submit(self, method):
 		message = """<a href="../receivable-cheques/%s" target="_blank">%s</a>""" % (rc.name, rc.name)
 		msgprint(_("Receivable Cheque {0} created").format(comma_and(message)))
 
-	if self.mode_of_payment == "Cheque" and self.payment_type == "Pay":
+	if self.mode_of_payment == "Payable Cheque" and self.payment_type == "Pay":
 		notes_acc = frappe.db.get_value("Company", self.company, "payable_notes_account")
 		if not notes_acc:
 			frappe.throw(_("Payable Notes Account not defined in the company setup page"))
