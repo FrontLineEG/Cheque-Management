@@ -1,0 +1,1 @@
+cheque_management.patches.create_mode_of_payment

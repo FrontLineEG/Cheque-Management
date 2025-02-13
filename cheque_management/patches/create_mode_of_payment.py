@@ -1,7 +1,6 @@
 import frappe
 
-@frappe.whitelist()
-def validate_mode_of_payments():
+def execute():
     if not frappe.db.exists("Mode of Payment","Receivable Cheque"):
         mode_of_payment_doc = frappe.new_doc("Mode of Payment")
         mode_of_payment_doc.mode_of_payment = "Receivable Cheque"
