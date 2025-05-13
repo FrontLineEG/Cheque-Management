@@ -127,20 +127,20 @@ doc_events = {
 # }
 
 
-fixtures = [{"dt": "Custom Field", "filters": [["name", "in", [
-		"Company-cb_00",
-		"Company-cheques_default_accounts",
-		"Company-cheques_under_collection_account",
-		"Company-payable_notes_account",
-		"Company-receivable_notes_account"
-	]]]},
-    {"dt": "Workflow", "filters": [["name", "like", 
-        "%Cheques Cycle"
-    ]]},
-    {"dt": "Workflow State", "filters": [["name", "like", 
-        "Cheque%"
-    ]]},
-    {"dt": "Workflow Action", "filters": [["name", "like", 
-        "Cheque%"
-    ]]}
-]
+# fixtures = [{"dt": "Custom Field", "filters": [["name", "in", [
+# 		"Company-cb_00",
+# 		"Company-cheques_default_accounts",
+# 		"Company-cheques_under_collection_account",
+# 		"Company-payable_notes_account",
+# 		"Company-receivable_notes_account"
+# 	]]]},
+#     {"dt": "Workflow", "filters": [["name", "like", 
+#         "%Cheques Cycle"
+#     ]]},
+#     {"dt": "Workflow State", "filters": [["name", "like", 
+#         "Cheque%"
+#     ]]},
+#     {"dt": "Workflow Action", "filters": [["name", "like", 
+#         "Cheque%"
+#     ]]}
+# ]
