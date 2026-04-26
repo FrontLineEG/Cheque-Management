@@ -26,7 +26,10 @@ app_license = "MIT"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Payment Entry" : "public/js/payment_entry.js"}
+doctype_js = {
+    "Payment Entry" :   "public/js/payment_entry.js",
+    "Mode of Payment" : "public/js/mode_of_payment.js"
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 
@@ -87,8 +90,8 @@ doctype_js = {"Payment Entry" : "public/js/payment_entry.js"}
 # }
 doc_events = {
     "Payment Entry": {
-        "on_submit": "cheque_management.api.pe_on_submit",
         "before_submit": "cheque_management.api.pe_before_submit",
+        "on_submit": "cheque_management.api.pe_on_submit",
         "on_cancel": "cheque_management.api.pe_on_cancel"
     }
 }

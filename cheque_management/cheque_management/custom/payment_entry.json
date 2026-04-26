@@ -1,0 +1,49 @@
+{
+ "custom_fields": [],
+ "custom_perms": [],
+ "doctype": "Payment Entry",
+ "links": [
+  {
+   "creation": "2026-04-21 15:31:26.504864",
+   "custom": 1,
+   "docstatus": 0,
+   "group": "Cheques",
+   "hidden": 0,
+   "idx": 1,
+   "is_child_table": 0,
+   "link_doctype": "Receivable Cheques",
+   "link_fieldname": "payment_entry",
+   "modified": "2026-04-21 15:31:26.504864",
+   "modified_by": "Administrator",
+   "name": "meh2cnf6qk",
+   "owner": "Administrator",
+   "parent": "Payment Entry",
+   "parent_doctype": null,
+   "parentfield": "links",
+   "parenttype": "Customize Form",
+   "table_fieldname": null
+  },
+  {
+   "creation": "2026-04-21 15:31:26.548569",
+   "custom": 1,
+   "docstatus": 0,
+   "group": "Cheques",
+   "hidden": 0,
+   "idx": 2,
+   "is_child_table": 0,
+   "link_doctype": "Payable Cheques",
+   "link_fieldname": "payment_entry",
+   "modified": "2026-04-21 15:31:26.548569",
+   "modified_by": "Administrator",
+   "name": "mehgjgelo2",
+   "owner": "Administrator",
+   "parent": "Payment Entry",
+   "parent_doctype": null,
+   "parentfield": "links",
+   "parenttype": "Customize Form",
+   "table_fieldname": null
+  }
+ ],
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

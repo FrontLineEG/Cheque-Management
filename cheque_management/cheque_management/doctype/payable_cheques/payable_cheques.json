@@ -7,19 +7,28 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "cheque_details_section",
   "cheque_no",
   "cheque_date",
   "currency",
+  "column_break_ra2z",
   "exchange_rate",
   "amount",
-  "column_break_00",
+  "amount_in_company_currency",
+  "bank_details_section",
   "bank",
+  "column_break_2pce",
+  "bank_account",
+  "party_section",
   "party_type",
+  "column_break_oq5p",
   "party",
+  "payment_info_section",
+  "payment_entry",
   "company",
+  "column_break_3kri",
   "project",
   "remarks",
-  "payment_entry",
   "section_break_00",
   "status_history",
   "cheque_status",
@@ -49,7 +58,7 @@
   },
   {
    "fieldname": "exchange_rate",
-   "fieldtype": "Currency",
+   "fieldtype": "Float",
    "label": "Exchange Rate",
    "reqd": 1
   },
@@ -57,19 +66,15 @@
    "fieldname": "amount",
    "fieldtype": "Currency",
    "label": "Amount",
+   "options": "currency",
    "reqd": 1
-  },
-  {
-   "fieldname": "column_break_00",
-   "fieldtype": "Column Break"
   },
   {
    "allow_on_submit": 1,
    "fieldname": "bank",
    "fieldtype": "Link",
    "label": "Bank",
-   "options": "Account",
-   "reqd":0
+   "options": "Bank"
   },
   {
    "fieldname": "party_type",
@@ -127,7 +132,8 @@
    "fieldname": "cheque_status",
    "fieldtype": "Data",
    "hidden": 1,
-   "label": "Cheque Status"
+   "label": "Cheque Status",
+   "read_only": 1
   },
   {
    "fieldname": "amended_from",
@@ -137,19 +143,70 @@
    "options": "Payable Cheques",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "amount_in_company_currency",
+   "fieldtype": "Currency",
+   "label": "Amount in Company Currency",
+   "options": "Company:company:default_currency"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "bank_account",
+   "fieldtype": "Link",
+   "label": "Bank Account",
+   "options": "Bank Account"
+  },
+  {
+   "fieldname": "cheque_details_section",
+   "fieldtype": "Section Break",
+   "label": "Cheque Details"
+  },
+  {
+   "fieldname": "column_break_ra2z",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_details_section",
+   "fieldtype": "Section Break",
+   "label": "Bank Details"
+  },
+  {
+   "fieldname": "column_break_2pce",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "party_section",
+   "fieldtype": "Section Break",
+   "label": "Party"
+  },
+  {
+   "fieldname": "column_break_oq5p",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payment_info_section",
+   "fieldtype": "Section Break",
+   "label": "Payment Info"
+  },
+  {
+   "fieldname": "column_break_3kri",
+   "fieldtype": "Column Break"
   }
  ],
+ "grid_page_length": 50,
  "in_create": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-10-03 16:52:32.891599",
- "modified_by": "Administrator",
+ "modified": "2026-04-26 15:44:53.279863",
+ "modified_by": "mohamedabdalla@frontlinesolutions.cloud",
  "module": "Cheque Management",
  "name": "Payable Cheques",
  "owner": "Administrator",
  "permissions": [
   {
    "cancel": 1,
+   "create": 1,
    "delete": 1,
    "email": 1,
    "export": 1,
@@ -160,10 +217,10 @@
    "select": 1,
    "share": 1,
    "submit": 1,
-   "write": 1,
-   "create":1
+   "write": 1
   },
   {
+   "create": 1,
    "email": 1,
    "export": 1,
    "print": 1,
@@ -172,10 +229,12 @@
    "role": "Accounts Manager",
    "share": 1,
    "submit": 1,
-   "write": 1,
-   "create":1
+   "write": 1
   }
  ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
- "sort_order": "DESC"
+ "sort_order": "DESC",
+ "states": []
 }

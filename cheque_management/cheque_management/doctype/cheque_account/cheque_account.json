@@ -1,0 +1,70 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-04-22 11:13:39.691314",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "custom_section_break_hsenc",
+  "custom_receivable_notes_account",
+  "custom_cheques_under_collection_account",
+  "custom_payable_notes_account"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "custom_section_break_hsenc",
+   "fieldtype": "Section Break",
+   "in_standard_filter": 1,
+   "label": "Cheque Settings"
+  },
+  {
+   "fieldname": "custom_receivable_notes_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Receivable Notes Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "custom_cheques_under_collection_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Cheques Under Collection Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "custom_payable_notes_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Payable Notes Account",
+   "options": "Account"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-22 11:22:54.602433",
+ "modified_by": "Administrator",
+ "module": "Cheque Management",
+ "name": "Cheque Account",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

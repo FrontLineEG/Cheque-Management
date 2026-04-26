@@ -3,6 +3,7 @@
 # For license information, please see license.txt
 
 from __future__ import unicode_literals
+import erpnext
 import frappe
 from frappe.utils import flt, cstr, nowdate, comma_and
 from frappe import throw, msgprint, _
@@ -25,23 +26,48 @@ class PayableCheques(Document):
 		self.cheque_status = self.get_status()
 	@frappe.whitelist()
 	def on_update(self):
-		notes_acc = frappe.db.get_value("Company", self.company, "payable_notes_account")
+		# 1. Get Mode of Payment from the linked Payment Entry
+		mop = frappe.db.get_value("Payment Entry", self.payment_entry, "mode_of_payment")
+		
+		if not mop:
+			frappe.throw(_("No Mode of Payment found in the linked Payment Entry ({0})").format(self.payment_entry))
+
+		# 2. Query our custom child table
+		mop_account = frappe.db.get_value(
+			"Cheque Account", 
+			{"parent": mop, "company": self.company}, 
+			["custom_payable_notes_account"], 
+			as_dict=True
+		)
+
+		if not mop_account:
+			frappe.throw(_("Mode of Payment {0} is not configured for Company {1} in the Cheque Accounts table.").format(mop, self.company))
+
+		# 3. Validate Payable Notes Account
+		notes_acc = mop_account.get("custom_payable_notes_account")
 		if not notes_acc:
-			frappe.throw(_("Payable Notes Account not defined in the company setup page"))
-		elif len(notes_acc) < 4:
-				frappe.throw(_("Payable Notes Account not defined in the company setup page"))
+			frappe.throw(_("Payable Notes Account not defined or invalid for company {0} in the Mode of Payment ({1})").format(self.company, mop))
 
-		rec_acc = frappe.db.get_value("Company", self.company, "default_payable_account")
-		if not rec_acc:
-			frappe.throw(_("Default Payable Account not defined in the company setup page"))
-		elif len(rec_acc) < 4:
-			frappe.throw(_("Default Payable Account not defined in the company setup page"))
+		# 4. Fetch the GL account tied to the selected Bank Account
+		actual_bank_gl_account = None
+		if self.bank_account:
+			actual_bank_gl_account = frappe.db.get_value("Bank Account", self.bank_account, "account")
 
+		# Execute Journal Entries based on status
 		if self.cheque_status == "Cheque Deducted":
-			self.make_journal_entry(notes_acc, self.bank, self.amount, self.posting_date, party_type=None, party=None, cost_center=None, 
+			if not actual_bank_gl_account:
+				frappe.throw(_("The selected Bank Account ({0}) does not have a designated GL Account.").format(self.bank_account))
+				
+			# Use actual_bank_gl_account instead of self.bank
+			self.make_journal_entry(notes_acc, actual_bank_gl_account, self.amount, self.posting_date, party_type=None, party=None, cost_center=None, 
 					save=True, submit=True)
+			# ADD THIS: Force the database to save the new status
+			self.db_set("cheque_status", "Cheque Deducted")
+					
 		if self.cheque_status == "Cheque Cancelled":
-			self.cancel_payment_entry()
+			# ADD THIS: Force the database to save the new status
+			self.db_set("cheque_status", "Cheque Cancelled")
+			self.cancel_payment_entry(actual_bank_gl_account)
 			self.cancel()
 			self.cancel_je()
 			
@@ -61,7 +87,7 @@ class PayableCheques(Document):
 
 				if entry.status == 'Cheque Cancelled':
 					frappe.db.set_value('Payable Cheques Status',entry.name,'journal_entry',je_data)
-				frappe.db.set_value('Payable Cheques',self.name,'workflow_state','Cheque Cancelled')
+				
 				frappe.db.set_value('Payable Cheques',self.name,'cheque_status','Cheque Cancelled')
 				
 				
@@ -89,7 +115,7 @@ class PayableCheques(Document):
 
 		return cheque_status
 
-	def cancel_payment_entry(self):
+	def cancel_payment_entry(self, bank_gl_account):
 		message = ''
 		if self.payment_entry: 
 			frappe.get_doc("Payment Entry", self.payment_entry).cancel()
@@ -97,58 +123,101 @@ class PayableCheques(Document):
 		self.append("status_history", {
 								"status": self.cheque_status,
 								"transaction_date": nowdate(),
-								"bank": self.bank
+								"bank": bank_gl_account
 							})
 		self.submit()
 		message += """<a href="#Form/Payment Entry/%s" target="_blank">%s</a>""" % (self.payment_entry, self.payment_entry) 
 		msgprint(_("Payment Entry {0} Cancelled").format(comma_and(message)))
 
 			
+
+
 	def make_journal_entry(self, account1, account2, amount, posting_date=None, party_type=None, party=None, cost_center=None, 
-							save=True, submit=False):
-		jv = frappe.new_doc("Journal Entry")
-		jv.posting_date = posting_date or nowdate()
-		jv.company = self.company
-		jv.cheque_no = self.cheque_no
-		jv.cheque_date = self.cheque_date
-		jv.user_remark = self.remarks or "Cheque Transaction"
-		jv.multi_currency = 0
-		jv.set("accounts", [
-			{
-				"account": account1,
-				"party_type": party_type if (self.cheque_status == "Cheque Cancelled") else None,
-				"party": party if self.cheque_status == "Cheque Cancelled" else None,
-				"cost_center": cost_center,
-				"project": self.project,
-				"debit_in_account_currency": amount if amount > 0 else 0,
-				"credit_in_account_currency": abs(amount) if amount < 0 else 0
-			}, {
-				"account": account2,
-				"party_type": party_type if self.cheque_status == "Cheque Issued" else None,
-				"party": party if self.cheque_status == "Cheque Issued" else None,
-				"cost_center": cost_center,
-				"project": self.project,
-				"credit_in_account_currency": amount if amount > 0 else 0,
-				"debit_in_account_currency": abs(amount) if amount < 0 else 0
-			}
-		])
-		if save or submit:
-			jv.insert(ignore_permissions=True)
+								save=True, submit=False):
+			jv = frappe.new_doc("Journal Entry")
+			jv.posting_date = posting_date or nowdate()
+			jv.company = self.company
+			jv.cheque_no = self.cheque_no
+			jv.cheque_date = self.cheque_date
+			jv.user_remark = self.remarks or "Cheque Transaction"   
 
-			if submit:
-				jv.submit()
+			# --- Multi-Currency Logic Initialization ---
+			company_currency = frappe.get_cached_value('Company', self.company, 'default_currency')
+			cheque_currency = self.currency
+			exchange_rate = flt(self.exchange_rate) if flt(self.exchange_rate) > 0 else 1.0
 
-		self.append("status_history", {
-								"status": self.cheque_status,
-								"transaction_date": nowdate(),
-								"debit_account": account1,
-								"credit_account": account2,
-								"journal_entry": jv.name
-							})
-		self.submit()
-		message = """<a href="../journal-entry/%s" target="_blank">%s</a>""" % (jv.name, jv.name)
-		msgprint(_("Journal Entry {0} created").format(comma_and(message)))
-		#message = _("Journal Entry {0} created").format(comma_and(message))
-		
-		return message
+			base_amount = flt(self.amount_in_company_currency)
+			if not base_amount:
+				base_amount = flt(amount) * exchange_rate
+
+			def get_account_values(account):
+				acc_currency = frappe.db.get_value("Account", account, "account_currency") or company_currency
+				
+				if acc_currency == cheque_currency:
+					return acc_currency, amount, exchange_rate
+				elif acc_currency == company_currency:
+					return acc_currency, base_amount, 1.0
+				else:
+					frappe.throw(_("Cannot use Account {0}. The Account Currency must match either the Company Currency or the Cheque Currency.").format(account))
 			
+			curr1, val1, exc1 = get_account_values(account1)
+			curr2, val2, exc2 = get_account_values(account2)
+
+			jv.multi_currency = 1 if (curr1 != company_currency or curr2 != company_currency) else 0
+
+			# --- Set Journal Entry Accounts ---
+			jv.set("accounts", [
+				{
+					"account": account1,
+					"party_type": party_type if (self.cheque_status == "Cheque Cancelled") else None,
+					"party": party if self.cheque_status == "Cheque Cancelled" else None,
+					"cost_center": cost_center,
+					"project": self.project,
+					
+					"account_currency": curr1,
+					"exchange_rate": exc1,
+					"debit_in_account_currency": val1 if amount > 0 else 0,
+					"credit_in_account_currency": abs(val1) if amount < 0 else 0,
+					"debit": base_amount if amount > 0 else 0,
+					"credit": base_amount if amount < 0 else 0
+				}, {
+					"account": account2,
+					"party_type": party_type if self.cheque_status == "Cheque Issued" else None,
+					"party": party if self.cheque_status == "Cheque Issued" else None,
+					"cost_center": cost_center,
+					"project": self.project,
+					
+					"account_currency": curr2,
+					"exchange_rate": exc2,
+					"credit_in_account_currency": val2 if amount > 0 else 0,
+					"debit_in_account_currency": abs(val2) if amount < 0 else 0,
+					"credit": base_amount if amount > 0 else 0,
+					"debit": base_amount if amount < 0 else 0
+				}
+			])
+			
+			if save or submit:
+				jv.insert(ignore_permissions=True)
+
+				if submit:
+					jv.submit()
+					
+			# Fetch actual GL account for the history log
+			actual_bank_gl_account = None
+			if self.bank_account:
+				actual_bank_gl_account = frappe.db.get_value("Bank Account", self.bank_account, "account")
+
+			self.append("status_history", {
+									"status": self.cheque_status,
+									"transaction_date": nowdate(),
+									"bank": actual_bank_gl_account,
+									"debit_account": account1,
+									"credit_account": account2,
+									"journal_entry": jv.name
+								})
+								
+			self.submit()
+			message = """<a href="../journal-entry/%s" target="_blank">%s</a>""" % (jv.name, jv.name)
+			msgprint(_("Journal Entry {0} created").format(comma_and(message)))
+
+			return message
