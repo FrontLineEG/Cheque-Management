@@ -22,8 +22,20 @@ class PayableCheques(Document):
 
 		self.name = self.cheque_no + ndx
 		
+	
 	def validate(self):
+		
 		self.cheque_status = self.get_status()
+		
+		if self.payment_entry:
+			
+			pe_bank_account = frappe.db.get_value("Payment Entry", self.payment_entry, "bank_account")
+			if pe_bank_account:
+				self.bank_account = pe_bank_account
+				bank_name = frappe.db.get_value("Bank Account", pe_bank_account, "bank")
+				if bank_name:
+					self.bank = bank_name
+
 	@frappe.whitelist()
 	def on_update(self):
 		# 1. Get Mode of Payment from the linked Payment Entry
@@ -135,6 +147,7 @@ class PayableCheques(Document):
 	def make_journal_entry(self, account1, account2, amount, posting_date=None, party_type=None, party=None, cost_center=None, 
 								save=True, submit=False):
 			jv = frappe.new_doc("Journal Entry")
+			jv.voucher_type = "Bank Entry"
 			jv.posting_date = posting_date or nowdate()
 			jv.company = self.company
 			jv.cheque_no = self.cheque_no
